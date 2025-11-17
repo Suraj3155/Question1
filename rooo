@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    environment {
+        // Change this if needed
+        DEPLOY_DIR = 'C:\\inetpub\\wwwroot'   // IIS Web Root Folder
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo 'Cloning project from YOUR GitHub repo...'
+                git branch: 'main', url: 'https://github.com/Suraj3155/Question1.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Build Step: Listing files in workspace'
+                bat 'dir'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying files to IIS folder..."
+
+                // Copy EVERYTHING from your repo to IIS folder
+                bat "xcopy /E /I /Y *.* ${DEPLOY_DIR}\\"
+            }
+        }
+
+        stage('Test (Optional)') {
+            steps {
+                echo 'Skipping HTTP server test (IIS will handle hosting)'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment done! Visit http://localhost/'
+        }
+        failure {
+            echo 'Pipeline failed. Check console log.'
+        }
+    }
+}
